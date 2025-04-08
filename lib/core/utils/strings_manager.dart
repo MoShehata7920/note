@@ -1,13 +1,39 @@
 class AppStrings {
-  // String keys (for reference)
-  static String noRouteTitle = 'No Route Title';
-  static String noRouteFound = 'No Route Found';
+  // Route Strings
+  static const String noRouteTitle = 'noRouteTitle';
+  static const String noRouteFound = 'noRouteFound';
 
   // Splash Screen
-  static String welcomeToPersonalNote = "welcome To Personal Notes";
+  static const String welcomeToPersonalNote = "welcomeToPersonalNote";
 
   // Home Screen
-  static String personalNotes = "Personal Notes";
-  static String noNotesYet = "No notes yet! Start adding some.";
-  static String addNote = "Add Note";
+  static const String personalNotes = "personalNotes";
+  static const String noNotesYet = "noNotesYet";
+
+  // Add Edit Note Screen
+  static const String addNote = "addNote";
+  static const String editNote = "editNote";
+  static const String title = "title";
+  static const String selectCategory = "selectCategory";
+  static const String writeYourNote = "writeYourNote";
+  static const String pleaseEnterATitle = "pleaseEnterATitle";
+  static const String untitled = "untitled";
+  static const String failedToSaveNote = "failedToSaveNote";
+  static const String work = "work";
+  static const String personal = "personal";
+  static const String ideas = "ideas";
+  static const String shopping = "shopping";
+  static const String travel = "travel";
+  static const String health = "health";
+  static const String education = "education";
+  static const String other = "other";
+  static const String recording = "recording";
+  static const String voiceNoteRecorded = "voiceNoteRecorded";
+  static const String microphonePermissionDenied = "microphonePermissionDenied";
+  static const String failedToPlaVoiceNote = "failedToPlaVoiceNote";
+
+  // Settings Screen
+  static const String settings = "settings";
+  static const String darkMode = "darkMode";
+  static const String language = "language";
 }

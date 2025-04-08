@@ -23,13 +23,14 @@ class NoteAdapter extends TypeAdapter<Note> {
       timestamp: fields[3] as DateTime,
       isPinned: fields[4] as bool,
       category: fields[5] as String?,
+      voiceNotePath: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Note obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class NoteAdapter extends TypeAdapter<Note> {
       ..writeByte(4)
       ..write(obj.isPinned)
       ..writeByte(5)
-      ..write(obj.category);
+      ..write(obj.category)
+      ..writeByte(6)
+      ..write(obj.voiceNotePath);
   }
 
   @override

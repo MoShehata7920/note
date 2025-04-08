@@ -12,4 +12,16 @@ class AppIcons {
   static const delete = IconlyBroken.delete;
   static const clear = Icons.clear;
   static const backArrow = Icons.arrow_back;
+  static const save = Icons.save;
+  static const stop = Icons.stop;
+  static const mic = Icons.mic;
+  static const dropDown = Icons.arrow_drop_down;
+  static const work = Icons.work;
+  static const personal = Icons.person;
+  static const ideas = Icons.lightbulb;
+  static const shopping = Icons.shopping_cart;
+  static const travel = Icons.flight;
+  static const health = Icons.favorite;
+  static const education = Icons.school;
+  static const others = Icons.category;
 }

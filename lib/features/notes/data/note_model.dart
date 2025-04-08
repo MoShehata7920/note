@@ -22,6 +22,9 @@ class Note extends HiveObject {
   @HiveField(5)
   String? category;
 
+  @HiveField(6)
+  String? voiceNotePath;
+
   Note({
     required this.id,
     required this.title,
@@ -29,5 +32,6 @@ class Note extends HiveObject {
     required this.timestamp,
     this.isPinned = false,
     this.category,
+    this.voiceNotePath,
   });
 }

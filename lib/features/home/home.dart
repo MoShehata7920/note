@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,7 +6,9 @@ import 'package:note/core/utils/icons_manager.dart';
 import 'package:note/core/utils/routes_manager.dart';
 import 'package:note/core/utils/strings_manager.dart';
 import 'package:note/core/widgets/app_text.dart';
-import 'package:note/features/notes/provider/note_provider.dart';
+import 'package:note/features/home/search_delegate.dart';
+import 'package:note/features/notes/presentation/add_edit_note_screen.dart';
+import 'package:note/features/notes/presentation/provider/note_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: AppText(text: AppStrings.personalNotes),
+        title: AppText(text: AppStrings.personalNotes.tr()),
         actions: [
           IconButton(
             icon: const Icon(AppIcons.search),
@@ -46,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Consumer<NoteProvider>(
         builder: (context, noteProvider, child) {
           if (noteProvider.notes.isEmpty) {
-            return Center(child: AppText(text: AppStrings.noNotesYet));
+            return Center(child: AppText(text: AppStrings.noNotesYet.tr()));
           }
           return _isGridView
               ? GridView.builder(
@@ -73,9 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, Routes.addNoteRoute);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddEditNoteScreen()),
+          );
         },
-        tooltip: AppStrings.addNote,
+        tooltip: AppStrings.addNote.tr(),
         child: const Icon(AppIcons.add),
       ),
     );
@@ -84,7 +90,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildNoteCard(note, NoteProvider noteProvider) {
     return Card(
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AddEditNoteScreen(note: note)),
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -123,41 +134,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
-
-class NoteSearchDelegate extends SearchDelegate {
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(icon: const Icon(AppIcons.clear), onPressed: () => query = ''),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      icon: const Icon(AppIcons.backArrow),
-      onPressed: () => close(context, null),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final noteProvider = Provider.of<NoteProvider>(context, listen: false);
-    final results = noteProvider.searchNotes(query);
-    return ListView.builder(
-      itemCount: results.length,
-      itemBuilder: (context, index) {
-        final note = results[index];
-        return ListTile(
-          title: AppText(text: note.title),
-          subtitle: AppText(text: note.content),
-          onTap: () {},
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) => buildResults(context);
 }

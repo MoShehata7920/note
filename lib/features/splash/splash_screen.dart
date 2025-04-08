@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:note/core/utils/assets_manager.dart';
 import 'package:note/core/utils/routes_manager.dart';
@@ -44,7 +45,7 @@ class SplashScreenState extends State<SplashScreen> {
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TypewriterAnimatedText(
-                      AppStrings.welcomeToPersonalNote,
+                      AppStrings.welcomeToPersonalNote.tr(),
                       speed: const Duration(milliseconds: 100),
                     ),
                   ],
