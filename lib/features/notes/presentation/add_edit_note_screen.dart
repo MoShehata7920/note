@@ -1,17 +1,15 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'package:note/core/utils/icons_manager.dart';
 import 'package:note/core/utils/strings_manager.dart';
 import 'package:note/core/utils/utils.dart';
+import 'package:note/core/widgets/app_text.dart';
 import 'package:note/features/notes/data/note_model.dart';
+import 'package:note/features/notes/presentation/provider/audio_provider.dart';
 import 'package:note/features/notes/presentation/provider/note_provider.dart';
 
 class AddEditNoteScreen extends StatefulWidget {
@@ -40,25 +38,20 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
     AppStrings.other.tr(),
   ];
 
-  FlutterSoundRecorder? _recorder;
-  FlutterSoundPlayer? _player;
-  bool _isRecording = false;
-  bool _isPlaying = false;
-  String? _voiceNotePath;
-  bool _isAudioInitialized = false;
-
   @override
   void initState() {
     super.initState();
-    _recorder = FlutterSoundRecorder();
-    _player = FlutterSoundPlayer();
-    _initializeAudio();
     if (widget.note != null) {
       _titleController.text = widget.note!.title;
       _contentController.text = widget.note!.content;
       _isPinned = widget.note!.isPinned;
       _selectedCategory = widget.note!.category;
-      _voiceNotePath = widget.note!.voiceNotePath;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<AudioProvider>(
+          context,
+          listen: false,
+        ).setVoiceNotePath(widget.note!.voiceNotePath);
+      });
     }
   }
 
@@ -67,13 +60,15 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
     Size size = Utils(context).screenSize;
 
     final noteProvider = Provider.of<NoteProvider>(context, listen: false);
+    final audioProvider = Provider.of<AudioProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.note == null
-              ? AppStrings.addNote.tr()
-              : AppStrings.editNote.tr(),
+        title: AppText(
+          text:
+              widget.note == null
+                  ? AppStrings.addNote.tr()
+                  : AppStrings.editNote.tr(),
         ),
         actions: [
           IconButton(
@@ -83,7 +78,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
           ),
           IconButton(
             icon: const Icon(AppIcons.save),
-            onPressed: () async => await _saveNote(noteProvider),
+            onPressed: () async => await _saveNote(noteProvider, audioProvider),
             tooltip: 'Save Note',
           ),
         ],
@@ -102,7 +97,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
               SizedBox(height: size.height * 0.02),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
-                hint: Text(AppStrings.selectCategory.tr()),
+                hint: AppText(text: AppStrings.selectCategory.tr()),
                 items:
                     _categories.map((category) {
                       return DropdownMenuItem(
@@ -115,7 +110,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
                               color: Theme.of(context).colorScheme.secondary,
                             ),
                             SizedBox(width: size.height * 0.01),
-                            Text(category),
+                            AppText(text: category),
                           ],
                         ),
                       );
@@ -137,7 +132,8 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: size.height * 0.02),
-              if (_voiceNotePath != null || _isRecording) ...[
+              if (audioProvider.voiceNotePath != null ||
+                  audioProvider.isRecording) ...[
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
@@ -145,34 +141,33 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
                       children: [
                         IconButton(
                           icon: Icon(
-                            _isRecording
-                                ? Icons.mic
-                                : _isPlaying
-                                ? Icons.stop
-                                : Icons.play_arrow,
+                            audioProvider.isRecording
+                                ? AppIcons.mic
+                                : audioProvider.isPlaying
+                                ? AppIcons.stop
+                                : AppIcons.play,
                             color: Theme.of(context).colorScheme.secondary,
                           ),
                           onPressed:
-                              _isRecording
+                              audioProvider.isRecording
                                   ? null
-                                  : _isPlaying
-                                  ? _stopPlaying
-                                  : _startPlaying,
+                                  : audioProvider.isPlaying
+                                  ? audioProvider.stopPlaying
+                                  : () => _startPlaying(audioProvider),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: size.height * 0.01),
                         Expanded(
-                          child: Text(
-                            _isRecording
-                                ? AppStrings.recording.tr()
-                                : AppStrings.voiceNoteRecorded.tr(),
-                            style: Theme.of(context).textTheme.bodyMedium,
+                          child: AppText(
+                            text:
+                                audioProvider.isRecording
+                                    ? AppStrings.recording.tr()
+                                    : AppStrings.voiceNoteRecorded.tr(),
                           ),
                         ),
-                        if (!_isRecording)
+                        if (!audioProvider.isRecording)
                           IconButton(
                             icon: const Icon(AppIcons.delete),
-                            onPressed:
-                                () => setState(() => _voiceNotePath = null),
+                            onPressed: audioProvider.deleteVoiceNote,
                           ),
                       ],
                     ),
@@ -185,11 +180,17 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _isRecording ? _stopRecording : _startRecording,
-        tooltip: _isRecording ? 'Stop Recording' : 'Record Voice Note',
+        onPressed:
+            audioProvider.isRecording
+                ? audioProvider.stopRecording
+                : () => _startRecording(audioProvider),
+        tooltip:
+            audioProvider.isRecording ? 'Stop Recording' : 'Record Voice Note',
         backgroundColor:
-            _isRecording ? Colors.red : Theme.of(context).colorScheme.secondary,
-        child: Icon(_isRecording ? AppIcons.stop : AppIcons.mic),
+            audioProvider.isRecording
+                ? Colors.red
+                : Theme.of(context).colorScheme.secondary,
+        child: Icon(audioProvider.isRecording ? AppIcons.stop : AppIcons.mic),
       ),
     );
   }
@@ -216,17 +217,44 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
     }
   }
 
-  Future<void> _saveNote(NoteProvider noteProvider) async {
+  Future<void> _startRecording(AudioProvider audioProvider) async {
+    if (await Permission.microphone.isGranted) {
+      await audioProvider.startRecording();
+    } else {
+      final status = await Permission.microphone.request();
+      if (status.isGranted) {
+        await audioProvider.startRecording();
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: AppText(
+                text: AppStrings.microphonePermissionDenied.tr(),
+              ),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _startPlaying(AudioProvider audioProvider) async {
+    await audioProvider.startPlaying();
+  }
+
+  Future<void> _saveNote(
+    NoteProvider noteProvider,
+    AudioProvider audioProvider,
+  ) async {
     try {
       if (_titleController.text.isEmpty &&
           _contentController.text.isEmpty &&
-          _voiceNotePath == null) {
+          audioProvider.voiceNotePath == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.pleaseEnterATitle.tr())),
+          SnackBar(content: AppText(text: AppStrings.pleaseEnterATitle.tr())),
         );
         return;
       }
-
       if (widget.note == null) {
         await noteProvider.addNote(
           _titleController.text.isEmpty
@@ -235,7 +263,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
           _contentController.text,
           category: _selectedCategory,
           isPinned: _isPinned,
-          voiceNotePath: _voiceNotePath,
+          voiceNotePath: audioProvider.voiceNotePath,
         );
       } else {
         widget.note!
@@ -246,101 +274,22 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
           ..content = _contentController.text
           ..isPinned = _isPinned
           ..category = _selectedCategory
-          ..voiceNotePath = _voiceNotePath
+          ..voiceNotePath = audioProvider.voiceNotePath
           ..timestamp = DateTime.now();
         await noteProvider.updateNote(widget.note!);
       }
       await Future.delayed(const Duration(milliseconds: 100));
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       if (kDebugMode) {
         print('Error saving note: $e');
       }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.failedToSaveNote.tr()} $e')),
-        );
-      }
-    }
-  }
-
-  Future<void> _startRecording() async {
-    if (_isAudioInitialized && await Permission.microphone.isGranted) {
-      final dir = await getTemporaryDirectory();
-      _voiceNotePath =
-          '${dir.path}/note_${DateTime.now().millisecondsSinceEpoch}.aac';
-      await _recorder!.startRecorder(toFile: _voiceNotePath);
-      setState(() => _isRecording = true);
-    } else {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppStrings.microphonePermissionDenied.tr())),
+        SnackBar(
+          content: AppText(text: '${AppStrings.failedToSaveNote.tr()} $e'),
+        ),
       );
-    }
-  }
-
-  Future<void> _stopRecording() async {
-    if (_isAudioInitialized) {
-      await _recorder!.stopRecorder();
-      setState(() => _isRecording = false);
-    }
-  }
-
-  Future<void> _initializeAudio() async {
-    try {
-      await _recorder!.openRecorder();
-      await Permission.microphone.request();
-      await _player!.openPlayer();
-      setState(() => _isAudioInitialized = true);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error initializing audio: $e');
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Audio initialization failed: $e')),
-        );
-      }
-    }
-  }
-
-  Future<void> _startPlaying() async {
-    if (_isAudioInitialized &&
-        _voiceNotePath != null &&
-        File(_voiceNotePath!).existsSync()) {
-      try {
-        await _player!.startPlayer(fromURI: _voiceNotePath);
-        setState(() => _isPlaying = true);
-        _player!.onProgress!.listen((event) {
-          if (event.position >= event.duration) {
-            setState(() => _isPlaying = false);
-          }
-        });
-      } catch (e) {
-        if (kDebugMode) {
-          print('Error starting playback: $e');
-        }
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${AppStrings.failedToPlaVoiceNote.tr()} $e'),
-            ),
-          );
-        }
-      }
-    } else {
-      if (kDebugMode) {
-        print('Audio not initialized or file not found: $_voiceNotePath');
-      }
-    }
-  }
-
-  Future<void> _stopPlaying() async {
-    if (_isAudioInitialized) {
-      await _player!.stopPlayer();
-      setState(() => _isPlaying = false);
     }
   }
 
@@ -348,10 +297,6 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
-    _recorder?.closeRecorder();
-    _recorder = null;
-    _player?.closePlayer();
-    _player = null;
     super.dispose();
   }
 }

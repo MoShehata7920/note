@@ -24,4 +24,5 @@ class AppIcons {
   static const health = Icons.favorite;
   static const education = Icons.school;
   static const others = Icons.category;
+  static const play = Icons.play_arrow;
 }
