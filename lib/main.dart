@@ -1,13 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:note/features/notes/presentation/provider/audio_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:note/core/theme/app_theme.dart';
 import 'package:note/core/utils/constants.dart';
 import 'package:note/core/utils/routes_manager.dart';
+import 'package:note/features/home/provider/home_provider.dart';
 import 'package:note/features/notes/data/note_model.dart';
+import 'package:note/features/notes/presentation/provider/audio_provider.dart';
 import 'package:note/features/notes/presentation/provider/note_provider.dart';
 import 'package:note/features/settings/presentation/provider/settings_provider.dart';
 
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NoteProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => AudioProvider()),
+        ChangeNotifierProvider(create: (_) => HomeProvider()),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settingsProvider, child) {

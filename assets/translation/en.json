@@ -33,5 +33,6 @@
     "voiceNote": "Voice Note",
     "sortByTitle": "Sort by Title",
     "sortByDate": "Sort by Date",
-    "sortByPinned": "Sort by Pinned"
+    "sortByPinned": "Sort by Pinned",
+    "noResultsFound": "No results found"
 }

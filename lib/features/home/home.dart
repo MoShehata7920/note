@@ -8,6 +8,7 @@ import 'package:note/core/utils/routes_manager.dart';
 import 'package:note/core/utils/strings_manager.dart';
 import 'package:note/core/utils/utils.dart';
 import 'package:note/core/widgets/app_text.dart';
+import 'package:note/features/home/provider/home_provider.dart'; // Add this import
 import 'package:note/features/home/search_delegate.dart';
 import 'package:note/features/notes/data/note_model.dart';
 import 'package:note/features/notes/presentation/add_edit_note_screen.dart';
@@ -22,8 +23,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _isGridView = true;
-
   @override
   Widget build(BuildContext context) {
     Size size = Utils(context).screenSize;
@@ -45,42 +44,44 @@ class _HomeScreenState extends State<HomeScreen> {
                   delegate: NoteSearchDelegate(),
                 ),
           ),
-          IconButton(
-            icon: Icon(_isGridView ? AppIcons.list : AppIcons.grid),
-            onPressed: () {
-              setState(() => _isGridView = !_isGridView);
+          Consumer<HomeProvider>(
+            builder: (context, homeProvider, child) {
+              return IconButton(
+                icon: Icon(
+                  homeProvider.isGridView ? AppIcons.list : AppIcons.grid,
+                ),
+                onPressed: () {
+                  homeProvider.toggleViewMode();
+                },
+              );
             },
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.sort),
+            icon: const Icon(AppIcons.sort),
             onSelected: (value) {
-              setState(() {
-                final sortedNotes = List<Note>.from(
-                  context.read<NoteProvider>().notes,
+              final sortedNotes = List<Note>.from(
+                context.read<NoteProvider>().notes,
+              );
+              if (value == 'title') {
+                sortedNotes.sort(
+                  (a, b) => (a.title.isEmpty
+                          ? AppStrings.untitled.tr()
+                          : a.title)
+                      .compareTo(
+                        b.title.isEmpty ? AppStrings.untitled.tr() : b.title,
+                      ),
                 );
-                if (value == 'title') {
-                  sortedNotes.sort(
-                    (a, b) => (a.title.isEmpty
-                            ? AppStrings.untitled.tr()
-                            : a.title)
-                        .compareTo(
-                          b.title.isEmpty ? AppStrings.untitled.tr() : b.title,
-                        ),
-                  );
-                } else if (value == 'date') {
-                  sortedNotes.sort(
-                    (a, b) => b.timestamp.compareTo(a.timestamp),
-                  );
-                } else if (value == 'pinned') {
-                  sortedNotes.sort(
-                    (a, b) =>
-                        a.isPinned == b.isPinned
-                            ? b.timestamp.compareTo(a.timestamp)
-                            : (a.isPinned ? -1 : 1),
-                  );
-                }
-                context.read<NoteProvider>().updateNotes(sortedNotes);
-              });
+              } else if (value == 'date') {
+                sortedNotes.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+              } else if (value == 'pinned') {
+                sortedNotes.sort(
+                  (a, b) =>
+                      a.isPinned == b.isPinned
+                          ? b.timestamp.compareTo(a.timestamp)
+                          : (a.isPinned ? -1 : 1),
+                );
+              }
+              context.read<NoteProvider>().updateNotes(sortedNotes);
             },
             itemBuilder:
                 (context) => [
@@ -125,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     size: 80,
                     color: Theme.of(
                       context,
-                    ).colorScheme.secondary.withOpacity(0.5),
+                    ).colorScheme.secondary.withValues(alpha: 0.5),
                   ),
                   SizedBox(height: size.height * 0.02),
                   AppText(
@@ -148,27 +149,35 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           }
-          final sortedNotes = List<Note>.from(
-            noteProvider.notes,
-          ); // Type as List<Note>
-          return _isGridView
-              ? MasonryGridView.count(
-                padding: const EdgeInsets.all(16),
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                itemCount: sortedNotes.length,
-                itemBuilder:
-                    (context, index) =>
-                        _buildNoteCard(sortedNotes[index], noteProvider, size),
-              )
-              : ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: sortedNotes.length,
-                itemBuilder:
-                    (context, index) =>
-                        _buildNoteCard(sortedNotes[index], noteProvider, size),
-              );
+          final sortedNotes = List<Note>.from(noteProvider.notes);
+          return Consumer<HomeProvider>(
+            builder: (context, homeProvider, child) {
+              return homeProvider.isGridView
+                  ? MasonryGridView.count(
+                    padding: const EdgeInsets.all(16),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    itemCount: sortedNotes.length,
+                    itemBuilder:
+                        (context, index) => _buildNoteCard(
+                          sortedNotes[index],
+                          noteProvider,
+                          size,
+                        ),
+                  )
+                  : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: sortedNotes.length,
+                    itemBuilder:
+                        (context, index) => _buildNoteCard(
+                          sortedNotes[index],
+                          noteProvider,
+                          size,
+                        ),
+                  );
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -186,12 +195,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNoteCard(Note note, NoteProvider noteProvider, Size size) {
-    // Changed dynamic to Note
     return Consumer<AudioProvider>(
       builder: (context, audioProvider, child) {
         return Card(
           elevation: 6,
-          shadowColor: Colors.grey.withOpacity(0.3),
+          shadowColor: Colors.grey.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
