@@ -2,7 +2,7 @@
     "noRouteTitle": "No Route Title",
     "noRouteFound": "No Route Found",
     "welcomeToPersonalNote": "Welcome To Personal Notes",
-    "personalNotes": "Personal Notes",
+    "personalNotes": "Notes",
     "noNotesYet": "No notes yet! Start adding some.",
     "addNote": "Add Note",
     "editNote": "Edit Note",
@@ -34,5 +34,13 @@
     "sortByTitle": "Sort by Title",
     "sortByDate": "Sort by Date",
     "sortByPinned": "Sort by Pinned",
-    "noResultsFound": "No results found"
+    "noResultsFound": "No results found",
+    "general": "General",
+    "security": "Security",
+    "biometricAuth": "Biometric Authentication",
+    "authenticateToAccess": "Authenticate to access the app",
+    "pleaseAuthenticate": "Please authenticate",
+    "tryAgain": "Try Again",
+    "moreInfo": "More Info",
+    "aboutApp": "About App"
 }

@@ -28,4 +28,6 @@ class AppIcons {
   static const addNote = Icons.note_add;
   static const audio = IconlyBroken.voice;
   static const sort = Icons.sort;
+  static const lock = IconlyBroken.lock;
+  static const about = Icons.info;
 }

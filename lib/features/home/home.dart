@@ -8,21 +8,17 @@ import 'package:note/core/utils/routes_manager.dart';
 import 'package:note/core/utils/strings_manager.dart';
 import 'package:note/core/utils/utils.dart';
 import 'package:note/core/widgets/app_text.dart';
-import 'package:note/features/home/provider/home_provider.dart'; // Add this import
+import 'package:note/features/home/provider/home_provider.dart';
 import 'package:note/features/home/search_delegate.dart';
 import 'package:note/features/notes/data/note_model.dart';
 import 'package:note/features/notes/presentation/add_edit_note_screen.dart';
 import 'package:note/features/notes/presentation/provider/audio_provider.dart';
 import 'package:note/features/notes/presentation/provider/note_provider.dart';
+import 'package:note/features/settings/presentation/provider/settings_provider.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = Utils(context).screenSize;
@@ -30,10 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: AppText(
-          text: AppStrings.personalNotes.tr(),
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
+        title: Consumer<SettingsProvider>(
+          builder: (context, settingsProvider, child) {
+            return AppText(
+              text: AppStrings.personalNotes.tr(),
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            );
+          },
         ),
         actions: [
           IconButton(
@@ -50,9 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icon(
                   homeProvider.isGridView ? AppIcons.list : AppIcons.grid,
                 ),
-                onPressed: () {
-                  homeProvider.toggleViewMode();
-                },
+                onPressed: () => homeProvider.toggleViewMode(),
               );
             },
           ),
@@ -62,26 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
               final sortedNotes = List<Note>.from(
                 context.read<NoteProvider>().notes,
               );
-              if (value == 'title') {
-                sortedNotes.sort(
-                  (a, b) => (a.title.isEmpty
-                          ? AppStrings.untitled.tr()
-                          : a.title)
-                      .compareTo(
-                        b.title.isEmpty ? AppStrings.untitled.tr() : b.title,
-                      ),
-                );
-              } else if (value == 'date') {
-                sortedNotes.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-              } else if (value == 'pinned') {
-                sortedNotes.sort(
-                  (a, b) =>
-                      a.isPinned == b.isPinned
-                          ? b.timestamp.compareTo(a.timestamp)
-                          : (a.isPinned ? -1 : 1),
-                );
-              }
+              _sortNotes(sortedNotes, value);
               context.read<NoteProvider>().updateNotes(sortedNotes);
+              context.read<HomeProvider>().setSortMode(value);
             },
             itemBuilder:
                 (context) => [
@@ -152,6 +133,10 @@ class _HomeScreenState extends State<HomeScreen> {
           final sortedNotes = List<Note>.from(noteProvider.notes);
           return Consumer<HomeProvider>(
             builder: (context, homeProvider, child) {
+              _sortNotes(
+                sortedNotes,
+                homeProvider.sortMode,
+              ); // Apply saved sort mode
               return homeProvider.isGridView
                   ? MasonryGridView.count(
                     padding: const EdgeInsets.all(16),
@@ -192,6 +177,24 @@ class _HomeScreenState extends State<HomeScreen> {
         child: const Icon(AppIcons.add, size: 28),
       ),
     );
+  }
+
+  void _sortNotes(List<Note> notes, String sortMode) {
+    if (sortMode == 'title') {
+      notes.sort(
+        (a, b) => (a.title.isEmpty ? AppStrings.untitled.tr() : a.title)
+            .compareTo(b.title.isEmpty ? AppStrings.untitled.tr() : b.title),
+      );
+    } else if (sortMode == 'date') {
+      notes.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    } else if (sortMode == 'pinned') {
+      notes.sort(
+        (a, b) =>
+            a.isPinned == b.isPinned
+                ? b.timestamp.compareTo(a.timestamp)
+                : (a.isPinned ? -1 : 1),
+      );
+    }
   }
 
   Widget _buildNoteCard(Note note, NoteProvider noteProvider, Size size) {
@@ -247,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: size.height * 0.015),
+                  SizedBox(height: size.height * 0.001),
                   AppText(
                     text:
                         note.content.isEmpty
@@ -259,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.grey[800],
                   ),
                   if (note.voiceNotePath != null) ...[
-                    SizedBox(height: size.height * 0.015),
+                    SizedBox(height: size.height * 0.001),
                     Row(
                       children: [
                         IconButton(
@@ -294,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ],
-                  SizedBox(height: size.height * 0.015),
+                  SizedBox(height: size.height * 0.0001),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

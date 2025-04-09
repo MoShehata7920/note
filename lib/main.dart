@@ -10,6 +10,7 @@ import 'package:note/features/home/provider/home_provider.dart';
 import 'package:note/features/notes/data/note_model.dart';
 import 'package:note/features/notes/presentation/provider/audio_provider.dart';
 import 'package:note/features/notes/presentation/provider/note_provider.dart';
+import 'package:note/features/settings/presentation/auth_wrapper.dart';
 import 'package:note/features/settings/presentation/provider/settings_provider.dart';
 
 void main() async {
@@ -52,7 +53,10 @@ class MyApp extends StatelessWidget {
             onGenerateRoute: RouteGenerator.getRoute,
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
-            locale: context.locale,
+            locale: settingsProvider.locale,
+            builder: (context, child) {
+              return AuthWrapper(child: child!);
+            },
           );
         },
       ),

@@ -17,6 +17,8 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: primaryColor,
       foregroundColor: lightSurface,
+      iconTheme: IconThemeData(color: lightText),
+      actionsIconTheme: IconThemeData(color: lightText),
       elevation: 0,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -34,6 +36,7 @@ class AppTheme {
         fontWeight: FontWeight.bold,
         color: lightText,
       ),
+      bodyLarge: TextStyle(fontSize: 18, color: lightText),
       bodyMedium: TextStyle(fontSize: 16, color: lightText),
       bodySmall: TextStyle(fontSize: 12, color: Colors.grey),
     ),
@@ -59,6 +62,11 @@ class AppTheme {
       surface: lightSurface,
       onSurface: lightText,
       brightness: Brightness.light,
+      onPrimary: lightSurface,
+      onSecondary: lightText,
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: lightSurface.withValues(alpha: 0.95),
     ),
   );
 
@@ -69,6 +77,8 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: primaryColor,
       foregroundColor: darkText,
+      iconTheme: IconThemeData(color: darkText),
+      actionsIconTheme: IconThemeData(color: darkText),
       elevation: 0,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -86,6 +96,7 @@ class AppTheme {
         fontWeight: FontWeight.bold,
         color: darkText,
       ),
+      bodyLarge: TextStyle(fontSize: 18, color: darkText),
       bodyMedium: TextStyle(fontSize: 16, color: darkText),
       bodySmall: TextStyle(fontSize: 12, color: Colors.grey),
     ),
@@ -107,10 +118,15 @@ class AppTheme {
     ),
     colorScheme: ColorScheme.fromSwatch().copyWith(
       primary: primaryColor,
+      onPrimary: darkText,
       secondary: secondaryColor,
+      onSecondary: darkText,
       surface: darkSurface,
       onSurface: darkText,
       brightness: Brightness.dark,
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: darkSurface.withValues(alpha: 0.95),
     ),
   );
 }

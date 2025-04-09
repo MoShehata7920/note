@@ -2,7 +2,7 @@
     "noRouteTitle": "لا يوجد عنوان للمسار",
     "noRouteFound": "لم يتم العثور على المسار",
     "welcomeToPersonalNote": "مرحبًا بك في الملاحظات الشخصية",
-    "personalNotes": "ملاحظات شخصية",
+    "personalNotes": "الملاحظات",
     "noNotesYet": "لا توجد ملاحظات بعد! ابدأ بإضافة بعضها.",
     "addNote": "إضافة ملاحظة",
     "editNote": "تعديل ملاحظة",
@@ -33,5 +33,13 @@
     "sortByTitle": "ترتيب حسب العنوان",
     "sortByDate": "ترتيب حسب التاريخ",
     "sortByPinned": "ترتيب حسب التثبيت",
-    "noResultsFound": "لم يتم العثور على نتائج"
+    "noResultsFound": "لم يتم العثور على نتائج",
+    "general": "عامة",
+    "security": "الاحتياط",
+    "biometricAuth": "التحقق بالبيوميتريك",
+    "authenticateToAccess": "المصادقة للوصول إلى التطبيق",
+    "pleaseAuthenticate": "يرجى المصادقة",
+    "tryAgain": "حاول مرة أخرى",
+    "moreInfo": "مزيد من المعلومات",
+    "aboutApp": "حول التطبيق"
 }

@@ -41,6 +41,14 @@ class AppStrings {
   static const String settings = "settings";
   static const String darkMode = "darkMode";
   static const String language = "language";
+  static const String general = "general";
+  static const String security = "security";
+  static const String biometricAuth = "biometricAuth";
+  static const String authenticateToAccess = "authenticateToAccess";
+  static const String pleaseAuthenticate = "pleaseAuthenticate";
+  static const String tryAgain = "tryAgain";
+  static const String moreInfo = "moreInfo";
+  static const String aboutApp = "aboutApp";
 
   // Search Screen
   static const String noResultsFound = "noResultsFound";
