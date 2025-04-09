@@ -28,5 +28,10 @@
     "darkMode": "Dark Mode",
     "language": "Language",
     "english": "English",
-    "arabic": "Arabic"
+    "arabic": "Arabic",
+    "noContent": "No content",
+    "voiceNote": "Voice Note",
+    "sortByTitle": "Sort by Title",
+    "sortByDate": "Sort by Date",
+    "sortByPinned": "Sort by Pinned"
 }

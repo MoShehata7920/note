@@ -28,5 +28,9 @@
     "darkMode": "الوضع الداكن",
     "language": "اللغة",
     "english": "الانجليزية",
-    "arabic": "العربية"
+    "arabic": "العربية",
+    "voiceNote": "ملاحظة صوتية",
+    "sortByTitle": "ترتيب حسب العنوان",
+    "sortByDate": "ترتيب حسب التاريخ",
+    "sortByPinned": "ترتيب حسب التثبيت"
 }

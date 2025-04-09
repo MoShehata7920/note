@@ -69,6 +69,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
               widget.note == null
                   ? AppStrings.addNote.tr()
                   : AppStrings.editNote.tr(),
+          fontSize: 18,
         ),
         actions: [
           IconButton(

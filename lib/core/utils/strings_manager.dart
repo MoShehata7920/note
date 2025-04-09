@@ -9,6 +9,11 @@ class AppStrings {
   // Home Screen
   static const String personalNotes = "personalNotes";
   static const String noNotesYet = "noNotesYet";
+  static const String noContent = "noContent";
+  static const String voiceNote = "voiceNote";
+  static const String sortByTitle = "sortByTitle";
+  static const String sortByDate = "sortByDate";
+  static const String sortByPinned = "sortByPinned";
 
   // Add Edit Note Screen
   static const String addNote = "addNote";

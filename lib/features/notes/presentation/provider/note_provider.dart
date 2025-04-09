@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
-
 import 'package:note/features/notes/data/note_model.dart';
 
 class NoteProvider with ChangeNotifier {
@@ -97,5 +96,10 @@ class NoteProvider with ChangeNotifier {
               note.content.toLowerCase().contains(query.toLowerCase()),
         )
         .toList();
+  }
+
+  void updateNotes(List<Note> newNotes) { 
+    _notes = newNotes;
+    notifyListeners();
   }
 }

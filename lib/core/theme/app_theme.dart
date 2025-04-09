@@ -18,7 +18,6 @@ class AppTheme {
       backgroundColor: primaryColor,
       foregroundColor: lightSurface,
       elevation: 0,
-      centerTitle: true,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: secondaryColor,
@@ -71,7 +70,6 @@ class AppTheme {
       backgroundColor: primaryColor,
       foregroundColor: darkText,
       elevation: 0,
-      centerTitle: true,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: secondaryColor,
