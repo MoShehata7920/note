@@ -26,4 +26,5 @@ class AppIcons {
   static const others = Icons.category;
   static const play = Icons.play_arrow;
   static const addNote = Icons.note_add;
+  static const audio = IconlyBroken.voice;
 }

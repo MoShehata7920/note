@@ -41,4 +41,7 @@ class AppStrings {
   static const String settings = "settings";
   static const String darkMode = "darkMode";
   static const String language = "language";
+
+  // Search Screen
+  static const String noResultsFound = "noResultsFound";
 }
